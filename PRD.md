@@ -14,6 +14,23 @@
 
 Users can browse a curated agent catalogue, chain agents together in visual workflows, and deploy them to automate complex tasks leveraging Anthropic's Claude AI models.
 
+### Tech Stack (Simplified for Zero-Maintenance)
+
+**🎯 Core Philosophy: Serverless everything, deploy in minutes**
+
+- **Frontend + Backend:** Next.js on Vercel (one codebase, zero servers)
+- **Database:** Supabase (PostgreSQL + Auth + Storage + Real-time)
+- **AI:** Anthropic Claude API (via SDK)
+- **Deployment:** Git push → Auto-deployed (no DevOps needed)
+- **Cost:** $0/month until you scale (generous free tiers)
+
+**Why this stack?**
+- ✅ Deploy in 7 minutes (not weeks)
+- ✅ Zero server management
+- ✅ Auto-scales from 1 to 1M users
+- ✅ Free tier covers MVP and beyond
+- ✅ Focus on building features, not infrastructure
+
 ---
 
 ## Product Vision
@@ -245,88 +262,145 @@ Agentify provides a unified, mobile-first platform where users can:
 
 ## Technical Architecture
 
-### High-Level Architecture
+### High-Level Architecture (Simplified)
+
+**🎯 Goal: Zero-maintenance serverless architecture**
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                   Mobile App (React)                     │
-│  ┌─────────────┐  ┌──────────────┐  ┌───────────────┐  │
-│  │  Catalogue  │  │   Composer   │  │   Execution   │  │
-│  │     UI      │  │      UI      │  │      UI       │  │
-│  └─────────────┘  └──────────────┘  └───────────────┘  │
-│           │                │                 │           │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │         State Management (Redux/Zustand)           │ │
-│  └────────────────────────────────────────────────────┘ │
-│           │                │                 │           │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │            API Client / Service Layer              │ │
-│  └────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────┘
-                            │
-                            │ HTTPS/WebSocket
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│                    Backend API (Node.js)                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │   Catalogue  │  │   Workflow   │  │  Execution   │  │
-│  │   Service    │  │   Service    │  │   Engine     │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-│           │                │                 │           │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │              Anthropic API Client                  │ │
-│  └────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────┘
-                            │
-                            │ API Calls
-                            ▼
-                ┌───────────────────────┐
-                │   Anthropic Claude    │
-                │        API            │
-                └───────────────────────┘
-
-┌─────────────────────────────────────────────────────────┐
-│                      Data Layer                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │   User DB    │  │  Workflow DB │  │  Execution   │  │
-│  │  (Postgres)  │  │  (Postgres)  │  │  Logs (S3)   │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-└─────────────────────────────────────────────────────────┘
+│              VERCEL (All-in-one hosting)                 │
+│                                                           │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │         React Frontend (Mobile PWA)              │   │
+│  │  • Agent Catalogue UI                            │   │
+│  │  • Workflow Composer (React Flow)                │   │
+│  │  • Execution Monitor                             │   │
+│  │  • State: Zustand + React Query                  │   │
+│  └─────────────────────────────────────────────────┘   │
+│                          │                               │
+│                          │ API calls                     │
+│                          ▼                               │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │      Serverless API Functions (Next.js)         │   │
+│  │                                                   │   │
+│  │  /api/agents/execute    - Run workflows          │   │
+│  │  /api/workflows/*       - CRUD operations        │   │
+│  │  /api/anthropic/stream  - Proxy Claude API       │   │
+│  └─────────────────────────────────────────────────┘   │
+└───────────────────────────────┬───────────────────────────┘
+                                │
+                ┌───────────────┼────────────────┐
+                │               │                │
+                ▼               ▼                ▼
+    ┌──────────────────┐  ┌──────────┐  ┌──────────────┐
+    │    SUPABASE      │  │ Anthropic│  │   Vercel     │
+    │                  │  │  Claude  │  │   Blob       │
+    │ • PostgreSQL DB  │  │   API    │  │  Storage     │
+    │ • Auth           │  │          │  │              │
+    │ • Real-time      │  │ (Streaming)│ │ (Logs/Files) │
+    │ • Storage        │  │          │  │              │
+    └──────────────────┘  └──────────┘  └──────────────┘
 ```
 
-### Frontend Stack
+**Why This Architecture is Better:**
+
+✅ **Zero Server Management**
+- No EC2, no containers, no server configs
+- Vercel handles everything automatically
+- Focus on building features, not infrastructure
+
+✅ **One-Click Deployment**
+- Push to GitHub → Auto-deployed
+- Built-in CI/CD
+- Instant rollbacks
+
+✅ **Auto-Scaling**
+- Handles 1 user or 10,000 users automatically
+- Pay only for actual usage
+- No capacity planning needed
+
+✅ **Built-in Features**
+- Supabase: Auth, database, real-time subscriptions
+- Vercel: CDN, serverless functions, edge network
+- No need for Redis, queues, or worker servers
+
+✅ **Cost-Effective**
+- Generous free tiers (Supabase: Free tier unlimited, Vercel: 100GB free)
+- Scales from $0 to production
+- No idle server costs
+
+### Frontend Stack (Simplified)
 
 #### Core Technologies
-- **Framework:** React 18+ with TypeScript
-- **Build Tool:** Vite for fast development
-- **State Management:** Zustand or Redux Toolkit
-- **Routing:** React Router v6
-- **UI Components:** Tailwind CSS + shadcn/ui or MUI
-- **Workflow Canvas:** React Flow or Rete.js
-- **Mobile Framework:** React Native (future) or PWA
+- **Framework:** Next.js 14+ with TypeScript (React 18+)
+  - Why Next.js? Combines frontend + serverless API in one project
+  - Alternative: Vite + React (then deploy API functions separately)
+- **State Management:** Zustand (simpler than Redux)
+- **UI Components:** Tailwind CSS + shadcn/ui (copy-paste components)
+- **Workflow Canvas:** React Flow (visual workflow builder)
+- **Mobile:** PWA (Progressive Web App) - works on iOS/Android
 
 #### Key Libraries
-- **API Client:** TanStack Query (React Query) for data fetching
+- **Database Client:** @supabase/supabase-js (direct from frontend for reads)
+- **API Client:** TanStack Query (React Query) for data fetching & caching
 - **Forms:** React Hook Form + Zod validation
-- **Real-time:** Socket.io client for live updates
-- **Storage:** IndexedDB for offline support
-- **Auth:** Auth0 or Clerk for authentication
+- **Real-time:** Supabase Realtime (built-in, no Socket.io needed)
+- **Auth:** Supabase Auth (built-in, no Auth0/Clerk needed)
 
-### Backend Stack
+### Backend Stack (Serverless - No servers!)
 
-#### Core Technologies
-- **Runtime:** Node.js 20+ with TypeScript
-- **Framework:** Express.js or Fastify
-- **Database:** PostgreSQL (Supabase or Railway)
-- **File Storage:** S3-compatible storage
-- **Cache:** Redis for session and rate limiting
-- **Queue:** Bull or BullMQ for background jobs
+#### Vercel Serverless Functions
+```typescript
+// app/api/workflows/execute/route.ts
+export async function POST(request: Request) {
+  const { workflowId } = await request.json();
+
+  // Execute workflow with Anthropic API
+  const result = await executeWorkflow(workflowId);
+
+  return Response.json(result);
+}
+```
+
+**Why Serverless Functions?**
+- ✅ No server setup or maintenance
+- ✅ Auto-scales from 0 to millions of requests
+- ✅ Pay only when code runs
+- ✅ 10-second timeout (enough for most workflows)
+- ✅ Edge deployment (fast worldwide)
+
+#### Supabase (Database as a Service)
+```sql
+-- Everything handled via Supabase dashboard or migrations
+CREATE TABLE workflows (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id),
+  name TEXT NOT NULL,
+  nodes JSONB,
+  edges JSONB,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Row Level Security (automatic auth)
+ALTER TABLE workflows ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can only see their workflows"
+  ON workflows FOR SELECT
+  USING (auth.uid() = user_id);
+```
+
+**What Supabase Provides:**
+- ✅ PostgreSQL database (no setup)
+- ✅ Authentication (email, OAuth, magic links)
+- ✅ Real-time subscriptions (live updates)
+- ✅ Storage (file uploads)
+- ✅ Auto-generated REST API
+- ✅ Row Level Security (data protection)
 
 #### APIs & Services
-- **Anthropic SDK:** Official @anthropic-ai/sdk
-- **Webhook Processing:** Background worker queues
-- **Scheduled Execution:** Node-cron or Temporal
-- **Real-time:** Socket.io for live workflow updates
+- **Anthropic SDK:** Official @anthropic-ai/sdk (called from serverless functions)
+- **Scheduled Execution:** Vercel Cron Jobs (built-in)
+- **Background Jobs:** Vercel Queue (or Inngest for complex workflows)
+- **Real-time:** Supabase Realtime (replaces Socket.io)
 
 ### Data Models
 
@@ -441,19 +515,54 @@ interface NodeExecution {
 }
 ```
 
-### Deployment Architecture
+### Deployment Architecture (Simplified)
 
-#### Hosting Options
-- **Frontend:** Vercel, Netlify, or Cloudflare Pages
-- **Backend:** Railway, Render, or AWS ECS
-- **Database:** Supabase, Railway, or AWS RDS
-- **Storage:** AWS S3, Cloudflare R2, or Supabase Storage
+#### Single-Command Deployment 🚀
 
-#### Infrastructure
-- **CDN:** Cloudflare for static assets
-- **Monitoring:** Sentry for error tracking, LogRocket for session replay
-- **Analytics:** Mixpanel or PostHog
-- **API Gateway:** Rate limiting, authentication, logging
+**Step 1: Setup Supabase (5 minutes)**
+```bash
+# 1. Create free Supabase project at https://supabase.com
+# 2. Copy connection URL and anon key
+# 3. Run migrations from Supabase dashboard
+```
+
+**Step 2: Deploy to Vercel (2 minutes)**
+```bash
+# 1. Connect GitHub repo to Vercel
+# 2. Add environment variables:
+#    - SUPABASE_URL
+#    - SUPABASE_ANON_KEY
+#    - ANTHROPIC_API_KEY (admin key for shared usage)
+# 3. Push to main branch
+# Done! App is live at your-app.vercel.app
+```
+
+#### Complete Stack (Zero DevOps)
+- **Everything:** Vercel (frontend + serverless API)
+- **Database:** Supabase (PostgreSQL + Auth + Storage + Real-time)
+- **Monitoring:** Vercel Analytics (built-in) + Sentry (errors)
+- **Analytics:** PostHog (open-source, self-hosted option)
+- **CDN:** Vercel Edge Network (automatic, global)
+
+#### Cost Breakdown (MVP Phase)
+- **Vercel:** $0/month (Free tier: 100GB bandwidth, unlimited serverless calls)
+- **Supabase:** $0/month (Free tier: 500MB database, 1GB storage)
+- **Anthropic API:** Pay-per-use (~$3 per 1M tokens with Claude Haiku)
+- **Total fixed costs:** $0/month until you scale!
+
+#### Scaling Path
+- **Phase 1 (0-100 users):** Free tier everything
+- **Phase 2 (100-1,000 users):** Stay on free tier or Vercel Pro ($20/mo)
+- **Phase 3 (1,000-10,000 users):** Supabase Pro ($25/mo) + Vercel Pro
+- **Phase 4 (10,000+ users):** Custom enterprise pricing
+
+**No need for:**
+- ❌ Kubernetes
+- ❌ Docker containers
+- ❌ Load balancers
+- ❌ Server management
+- ❌ DevOps engineers
+- ❌ 24/7 monitoring dashboards
 
 ---
 
